@@ -50,13 +50,19 @@
 #![deny(non_snake_case)]
 #![deny(unused_mut)]
 #![cfg_attr(feature = "strict", deny(warnings))]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-use std::borrow::Cow;
-use std::{error, fmt};
+pub extern crate alloc;
+#[cfg(feature = "std")] pub extern crate core;
+
+use alloc::{borrow::Cow, vec::Vec, string::String};
+use core::fmt;
+
+#[cfg(feature = "std")] use std::error;
 
 // AsciiExt is needed for Rust 1.14 but not for newer versions
 #[allow(unused_imports, deprecated)]
-use std::ascii::AsciiExt;
+#[cfg(feature = "std")] use std::ascii::AsciiExt;
 
 /// Integer in the range `0..32`
 #[derive(PartialEq, Eq, Debug, Copy, Clone, Default, PartialOrd, Ord, Hash)]
@@ -160,7 +166,7 @@ impl<'a> Bech32Writer<'a> {
     /// Write out the checksum at the end. If this method isn't called this will happen on drop.
     pub fn finalize(mut self) -> fmt::Result {
         self.inner_finalize()?;
-        std::mem::forget(self);
+        core::mem::forget(self);
         Ok(())
     }
 
@@ -585,6 +591,7 @@ impl fmt::Display for Error {
     }
 }
 
+#[cfg(feature = "std")]
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {

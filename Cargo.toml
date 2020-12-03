@@ -12,5 +12,7 @@ license = "MIT"
 [features]
 # Only for CI to make all warnings errors, do not activate otherwise (may break forward compatibility)
 strict = []
+std = []
+default = ["std"]
 
 [dependencies]
